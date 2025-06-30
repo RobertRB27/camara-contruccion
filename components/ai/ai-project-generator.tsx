@@ -16,11 +16,13 @@ import {
   Truck, 
   AlertTriangle,
   FileText,
-  Download
+  Download,
+  Calculator
 } from 'lucide-react';
 import { ProjectTimeline } from './project-timeline';
 import { CostBreakdown } from './cost-breakdown';
 import { ResourcePlanning } from './resource-planning';
+import { BudgetOverview } from './budget-overview';
 
 interface GeneratedProject {
   title: string;
@@ -42,6 +44,22 @@ interface GeneratedProject {
       category: string;
       amount: number;
       percentage: number;
+    }>;
+  };
+  budget: {
+    projectTitle: string;
+    projectDescription: string;
+    distance: string;
+    materials: string;
+    items: Array<{
+      id: string;
+      code: string;
+      description: string;
+      unit: string;
+      quantity: number;
+      unitPrice: number;
+      totalPrice: number;
+      category: string;
     }>;
   };
   materials: Array<{
@@ -89,6 +107,7 @@ export function AIProjectGenerator() {
     // Simulate AI streaming response
     const responses = [
       'Analizando descripción del proyecto...',
+      'Generando presupuesto detallado...',
       'Calculando materiales necesarios...',
       'Estimando costos de mano de obra...',
       'Generando cronograma de trabajo...',
@@ -106,6 +125,44 @@ export function AIProjectGenerator() {
     const mockProject: GeneratedProject = {
       title: 'Proyecto de Construcción Residencial',
       description: input,
+      budget: {
+        projectTitle: 'ESTUDIOS Y DISEÑOS DEFINITIVOS PARA LA REHABILITACIÓN DE LA VÍA QUE UNE LOS RECINTOS GENERAL GÓMEZ – SAN ANTONIO DE LA PARROQUIA TARIFA',
+        projectDescription: 'UBICADA EN EL CANTÓN SAMBORONDÓN DE LA PROVINCIA DEL GUAYAS',
+        distance: '12.6 km',
+        materials: 'CANTERA LUZAGUI',
+        items: [
+          {
+            id: '1.1',
+            code: '302-1',
+            description: 'DESBROCE, DESBOSQUE Y LIMPIEZA',
+            unit: 'm2',
+            quantity: 465.104,
+            unitPrice: 0.02,
+            totalPrice: 9302.08,
+            category: 'OBRAS PRELIMINARES'
+          },
+          {
+            id: '1.2.1',
+            code: '303-2(1)',
+            description: 'EXCAVACION SIN CLASIFICACION (empuje = 60 m)',
+            unit: 'm3',
+            quantity: 409.56,
+            unitPrice: 1.44,
+            totalPrice: 589.77,
+            category: 'MOVIMIENTO DE TIERRA'
+          },
+          {
+            id: '1.2.2',
+            code: '304-1(2)',
+            description: 'MATERIAL DE PRESTAMO IMPORTADO',
+            unit: 'm3',
+            quantity: 318084.74,
+            unitPrice: 5.72,
+            totalPrice: 1819444.71,
+            category: 'MOVIMIENTO DE TIERRA'
+          }
+        ]
+      },
       timeline: {
         totalDuration: 180,
         phases: [
@@ -219,7 +276,7 @@ export function AIProjectGenerator() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
       {/* Input Section */}
       <Card className="border-2 border-dashed border-brand-secondary/30 hover:border-brand-secondary/50 transition-colors">
         <CardHeader>
@@ -287,8 +344,12 @@ export function AIProjectGenerator() {
             </Button>
           </div>
 
-          <Tabs defaultValue="timeline" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+          <Tabs defaultValue="budget" className="w-full">
+            <TabsList className="grid w-full grid-cols-7">
+              <TabsTrigger value="budget" className="flex items-center space-x-1">
+                <Calculator className="w-4 h-4" />
+                <span className="hidden sm:inline">Presupuesto</span>
+              </TabsTrigger>
               <TabsTrigger value="timeline" className="flex items-center space-x-1">
                 <Calendar className="w-4 h-4" />
                 <span className="hidden sm:inline">Cronograma</span>
@@ -314,6 +375,16 @@ export function AIProjectGenerator() {
                 <span className="hidden sm:inline">Riesgos</span>
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="budget" className="space-y-4">
+              <BudgetOverview
+                projectTitle={generatedProject.budget.projectTitle}
+                projectDescription={generatedProject.budget.projectDescription}
+                distance={generatedProject.budget.distance}
+                materials={generatedProject.budget.materials}
+                budgetItems={generatedProject.budget.items}
+              />
+            </TabsContent>
 
             <TabsContent value="timeline" className="space-y-4">
               <ProjectTimeline timeline={generatedProject.timeline} />
